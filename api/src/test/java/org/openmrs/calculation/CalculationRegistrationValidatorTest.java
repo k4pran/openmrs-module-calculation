@@ -13,13 +13,13 @@
  */
 package org.openmrs.calculation;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.calculation.api.CalculationRegistrationService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -35,7 +35,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 	
 	private static final String MODULE_TEST_DATA_XML = TEST_DATA_PATH + "moduleTestData.xml";
 	
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		calculationRegistrationService = Context.getService(CalculationRegistrationService.class);
 		executeDataSet(MODULE_TEST_DATA_XML);
@@ -53,7 +53,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setCalculationName(" ");
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("calculationName"));
+		Assertions.assertEquals(true, errors.hasFieldErrors("calculationName"));
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setCalculationName("A1");
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("token"));
+		Assertions.assertEquals(true, errors.hasFieldErrors("token"));
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setToken("age");
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("token"));
+		Assertions.assertEquals(true, errors.hasFieldErrors("token"));
 	}
 	
 	/**
@@ -96,7 +96,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setCalculationName("A1");
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("providerClassName"));
+		Assertions.assertEquals(true, errors.hasFieldErrors("providerClassName"));
 	}
 	
 	/**
@@ -108,7 +108,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		CalculationRegistration calculationRegistration = calculationRegistrationService.getCalculationRegistration(1);
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(false, errors.hasFieldErrors("token"));
+		Assertions.assertEquals(false, errors.hasFieldErrors("token"));
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setCalculationName(AgeCalculation.class.getName());
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(false, errors.hasErrors());
+		Assertions.assertEquals(false, errors.hasErrors());
 	}
 	
 	/**
@@ -138,6 +138,6 @@ public class CalculationRegistrationValidatorTest extends BaseModuleContextSensi
 		calculationRegistration.setCalculationName("org.invalid.calculationClassName");
 		Errors errors = new BindException(calculationRegistration, "calculationRegistration");
 		new CalculationRegistrationValidator().validate(calculationRegistration, errors);
-		Assert.assertEquals(true, errors.hasErrors());
+		Assertions.assertEquals(true, errors.hasErrors());
 	}
 }

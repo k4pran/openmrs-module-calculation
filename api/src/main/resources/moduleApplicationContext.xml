@@ -61,7 +61,7 @@
 	</bean>
 	
 	<bean id="calculationRegistrationDao" class="org.openmrs.${project.parent.artifactId}.db.HibernateCalculationRegistrationDAO">
-		<property name="sessionFactory" ref="dbSessionFactory" />
+		<constructor-arg name="sessionFactory" ref="sessionFactory" />
 	</bean>
 	
 </beans>

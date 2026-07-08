@@ -18,10 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.api.context.Context;
@@ -34,7 +34,7 @@ import org.openmrs.calculation.InvalidParameterValueException;
 import org.openmrs.calculation.MissingParameterException;
 import org.openmrs.calculation.parameter.ParameterDefinition;
 import org.openmrs.calculation.parameter.SimpleParameterDefinition;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
@@ -48,7 +48,7 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	
 	private static final String MODULE_TEST_DATA_XML = TEST_DATA_PATH + "moduleTestData.xml";
 	
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		executeDataSet(MODULE_TEST_DATA_XML);
 		service = Context.getService(PatientCalculationService.class);
@@ -59,13 +59,13 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	 *      PatientCalculationService#evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext
 	 *      )}
 	 */
-	@Test(expected = MissingParameterException.class)
+	@Test
 	@Verifies(value = "should fail if any required parameter is not set", method = "evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext)")
 	public void evaluate_shouldFailIfAnyRequiredParameterIsNotSet() throws Exception {
 		PatientCalculation ageCalculation = getAgeCalculation();
 		ParameterDefinition requiredDefinition = new SimpleParameterDefinition("testParam", "my data type", null, true);
 		ageCalculation.getParameterDefinitionSet().add(requiredDefinition);
-		service.evaluate(2, ageCalculation);
+		Assertions.assertThrows(MissingParameterException.class, () -> service.evaluate(2, ageCalculation));
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	 *      PatientCalculationService#evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext
 	 *      )}
 	 */
-	@Test(expected = MissingParameterException.class)
+	@Test
 	@Verifies(value = "should fail for a blank value for a required parameter if datatype is a primitive wrapper", method = "evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext)")
 	public void evaluate_shouldFailForABlankValueForARequiredParameterIfDatatypeIsAPrimitiveWrapper() throws Exception {
 		PatientCalculation ageCalculation = getAgeCalculation();
@@ -82,7 +82,8 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 		
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put(requiredDefinition.getKey(), "");
-		service.evaluate(2, ageCalculation, values, null);
+		Assertions.assertThrows(MissingParameterException.class,
+		    () -> service.evaluate(2, ageCalculation, values, null));
 	}
 	
 	/**
@@ -90,7 +91,7 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	 *      PatientCalculationService#evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext
 	 *      )}
 	 */
-	@Test(expected = MissingParameterException.class)
+	@Test
 	@Verifies(value = "should fail for a blank value for a required parameter if datatype is a String", method = "evaluate(Cohort,Calculation,Map<String,Object>,CalculationContext)")
 	public void evaluate_shouldFailForABlankValueForARequiredParameterIfDatatypeIsAString() throws Exception {
 		PatientCalculation ageCalculation = getAgeCalculation();
@@ -99,7 +100,8 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 		
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put(requiredDefinition.getKey(), "");
-		service.evaluate(2, ageCalculation, values, null);
+		Assertions.assertThrows(MissingParameterException.class,
+		    () -> service.evaluate(2, ageCalculation, values, null));
 	}
 	
 	/**
@@ -114,7 +116,7 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	 * @see {@link PatientCalculationService#evaluate(Cohort,PatientCalculation,Map<String,Object>,
 	 *      PatientCalculationContext)}
 	 */
-	@Test(expected = InvalidParameterValueException.class)
+	@Test
 	@Verifies(value = "should fail if the a parameter value doesnt match the allowed datatype", method = "evaluate(Cohort,PatientCalculation,Map<String,Object>,PatientCalculationContext)")
 	public void evaluate_shouldFailIfTheAParameterValueDoesntMatchTheAllowedDatatype() throws Exception {
 		PatientCalculation ageCalculation = getAgeCalculation();
@@ -123,7 +125,8 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 		
 		Map<String, Object> values = new HashMap<String, Object>();
 		values.put(param.getKey(), "2s");
-		service.evaluate(2, ageCalculation, values, null);
+		Assertions.assertThrows(InvalidParameterValueException.class,
+		    () -> service.evaluate(2, ageCalculation, values, null));
 	}
 	
 	/**
@@ -153,15 +156,15 @@ public class PatientCalculationServiceTest extends BaseModuleContextSensitiveTes
 	@Verifies(value = "should return the expected result size for cohort with a large number of patient", method = "evaluate(Cohort,PatientCalculation,Map<String,Object>,PatientCalculationContext)")
 	public void evaluate_shouldReturnTheExpectedResultSizeForCohortWithALargeNumberOfPatient() throws Exception {
 		final int patientCount = 1001012;
-		Assert.assertTrue(patientCount > CalculationConstants.EVALUATION_BATCH_SIZE);
+		Assertions.assertTrue(patientCount > CalculationConstants.EVALUATION_BATCH_SIZE);
 		List<Integer> cohort = new ArrayList<Integer>();
 		//create a large cohort for testing purposes
 		for (int i = 1; i <= patientCount; ++i) {
 			cohort.add(i);
 		}
 		
-		Assert.assertEquals(patientCount, service.evaluate(cohort, new CountingCalculation()).size());
+		Assertions.assertEquals(patientCount, service.evaluate(cohort, new CountingCalculation()).size());
 		//the cohort members should remain unchanged
-		Assert.assertEquals(patientCount, cohort.size());
+		Assertions.assertEquals(patientCount, cohort.size());
 	}
 }

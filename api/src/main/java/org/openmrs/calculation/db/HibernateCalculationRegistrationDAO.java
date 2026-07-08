@@ -14,119 +14,177 @@
 package org.openmrs.calculation.db;
 
 import java.util.List;
+import java.util.Locale;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
-import org.openmrs.api.db.hibernate.DbSession;
-import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.openmrs.calculation.CalculationRegistration;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * It is a default implementation of {@link CalculationRegistrationDAO}.
+ * Default implementation of {@link CalculationRegistrationDAO}.
  */
 public class HibernateCalculationRegistrationDAO implements CalculationRegistrationDAO {
-	
-	protected final Log log = LogFactory.getLog(this.getClass());
-	
-	private DbSessionFactory sessionFactory;
-	
-	/**
-	 * @param sessionFactory the sessionFactory to set
-	 */
-	public void setSessionFactory(DbSessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @return the session
-	 */
-	private DbSession getCurrentSession() {
-		return sessionFactory.getCurrentSession();
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#getCalculationRegistration(java.lang.Integer)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public CalculationRegistration getCalculationRegistration(Integer calculationRegistrationId) {
-		return (CalculationRegistration) getCurrentSession().get(CalculationRegistration.class, calculationRegistrationId);
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#getCalculationRegistrationByUuid(java.lang.String)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public CalculationRegistration getCalculationRegistrationByUuid(String uuid) {
-		return (CalculationRegistration) getCurrentSession().createQuery("FROM CalculationRegistration tr WHERE tr.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#getCalculationRegistrationByToken(java.lang.String)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public CalculationRegistration getCalculationRegistrationByToken(String token) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(CalculationRegistration.class);
-		criteria.add(Restrictions.ilike("token", token, MatchMode.EXACT));
-		return (CalculationRegistration) criteria.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#getAllCalculationRegistrations()
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional(readOnly = true)
-	public List<CalculationRegistration> getAllCalculationRegistrations() {
-		return getCurrentSession().createCriteria(CalculationRegistration.class).list();
-	}
 
-	/**
-	 * @see CalculationRegistrationDAO#getCalculationRegistrationsByProviderClassname(String)
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<CalculationRegistration> getCalculationRegistrationsByProviderClassname(String providerClassname) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(CalculationRegistration.class);
-		criteria.add(Restrictions.eq("providerClassName", providerClassname));
-		return criteria.list();
-	}
+    protected final Log log = LogFactory.getLog(this.getClass());
 
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#findCalculationRegistrations(java.lang.String)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional(readOnly = true)
-	public List<CalculationRegistration> findCalculationRegistrations(String partialToken) {
-		Criteria criteria = getCurrentSession().createCriteria(CalculationRegistration.class);
-		criteria.add(Restrictions.ilike("token", partialToken, MatchMode.ANYWHERE));
-		return criteria.list();
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#saveCalculationRegistration(org.openmrs.calculation.CalculationRegistration)
-	 */
-	@Override
-	@Transactional
-	public CalculationRegistration saveCalculationRegistration(CalculationRegistration calculationRegistration) {
-		getCurrentSession().saveOrUpdate(calculationRegistration);
-		return calculationRegistration;
-	}
-	
-	/**
-	 * @see org.openmrs.calculation.db.CalculationRegistrationDAO#deleteCalculationRegistration(org.openmrs.calculation.CalculationRegistration)
-	 */
-	@Override
-	@Transactional
-	public void deleteCalculationRegistration(CalculationRegistration calculationRegistration) {
-		getCurrentSession().delete(calculationRegistration);
-	}
+    private static final String TOKEN = "token";
+
+    private static final String PROVIDER_CLASS_NAME = "providerClassName";
+
+    private final SessionFactory sessionFactory;
+
+    public HibernateCalculationRegistrationDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
+    /**
+     * @return the current Hibernate session
+     */
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#getCalculationRegistration(Integer)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CalculationRegistration getCalculationRegistration(Integer calculationRegistrationId) {
+        return getCurrentSession().find(CalculationRegistration.class, calculationRegistrationId);
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#getCalculationRegistrationByUuid(String)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CalculationRegistration getCalculationRegistrationByUuid(String uuid) {
+        return getCurrentSession()
+                .createQuery("from CalculationRegistration tr where tr.uuid = :uuid", CalculationRegistration.class)
+                .setParameter("uuid", uuid)
+                .uniqueResult();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#getCalculationRegistrationByToken(String)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public CalculationRegistration getCalculationRegistrationByToken(String token) {
+        if (token == null) {
+            return null;
+        }
+
+        Session session = getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+
+        query.select(root)
+                .where(builder.equal(
+                        builder.lower(root.get(TOKEN)),
+                        token.toLowerCase(Locale.ROOT)
+                ));
+
+        return session.createQuery(query).uniqueResult();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#getAllCalculationRegistrations()
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CalculationRegistration> getAllCalculationRegistrations() {
+        Session session = getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+
+        query.select(root);
+
+        return session.createQuery(query).getResultList();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#getCalculationRegistrationsByProviderClassname(String)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CalculationRegistration> getCalculationRegistrationsByProviderClassname(String providerClassname) {
+        Session session = getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+
+        query.select(root)
+                .where(builder.equal(root.get(PROVIDER_CLASS_NAME), providerClassname));
+
+        return session.createQuery(query).getResultList();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#findCalculationRegistrations(String)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<CalculationRegistration> findCalculationRegistrations(String partialToken) {
+        if (partialToken == null) {
+            return getAllCalculationRegistrations();
+        }
+
+        Session session = getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+
+        query.select(root)
+                .where(builder.like(
+                        builder.lower(root.get(TOKEN)),
+                        containsIgnoreCasePattern(partialToken)
+                ));
+
+        return session.createQuery(query).getResultList();
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#saveCalculationRegistration(CalculationRegistration)
+     */
+    @Override
+    @Transactional
+    public CalculationRegistration saveCalculationRegistration(CalculationRegistration calculationRegistration) {
+        Session session = getCurrentSession();
+
+        if (calculationRegistration.getId() == null) {
+            session.persist(calculationRegistration);
+            return calculationRegistration;
+        }
+
+        return session.merge(calculationRegistration);
+    }
+
+    /**
+     * @see CalculationRegistrationDAO#deleteCalculationRegistration(CalculationRegistration)
+     */
+    @Override
+    @Transactional
+    public void deleteCalculationRegistration(CalculationRegistration calculationRegistration) {
+        Session session = getCurrentSession();
+
+        CalculationRegistration managedCalculationRegistration = session.contains(calculationRegistration)
+                ? calculationRegistration
+                : session.merge(calculationRegistration);
+
+        session.remove(managedCalculationRegistration);
+    }
+
+    private String containsIgnoreCasePattern(String value) {
+        return "%" + value.toLowerCase(Locale.ROOT) + "%";
+    }
 }

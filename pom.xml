@@ -34,7 +34,7 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>2.7.0</openMRSVersion>
+		<openMRSVersion>3.0.0-SNAPSHOT</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<groovyVersion>2.4.21</groovyVersion>
 	</properties>
