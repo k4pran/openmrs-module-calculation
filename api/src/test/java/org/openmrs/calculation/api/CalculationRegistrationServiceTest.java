@@ -171,12 +171,14 @@ public class CalculationRegistrationServiceTest extends BaseModuleContextSensiti
 		}
 		
 		CalculationRegistration newTokenRegInstance = service.getCalculationRegistrationByToken(tokenName);
-		newTokenRegInstance.setCalculationName("some.unknown.Classname");
+		newTokenRegInstance.setCalculationName(MostRecentObsCalculation.class.getName());
+		newTokenRegInstance.setConfiguration("5089");
 		
 		//this should synchronize our cache with the DB
 		service.saveCalculationRegistration(newTokenRegInstance);
 		
-		//should fail this time because of the new unknown class
-		Assertions.assertThrows(APIException.class, () -> service.getCalculation(tokenName, AgeCalculation.class));
+		MostRecentObsCalculation calculation = service.getCalculation(tokenName, MostRecentObsCalculation.class);
+		Assertions.assertNotNull(calculation);
+		Assertions.assertEquals(5089, calculation.getWhichConcept().getConceptId().intValue());
 	}
 }
