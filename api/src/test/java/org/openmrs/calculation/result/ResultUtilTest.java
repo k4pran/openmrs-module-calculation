@@ -21,15 +21,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.PatientProgram;
 import org.openmrs.test.Verifies;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResultUtilTest {
 	
@@ -46,7 +52,7 @@ public class ResultUtilTest {
 		listResult.setValue(results);
 		
 		CalculationResult firstResult = ResultUtil.getFirst(listResult);
-		Assert.assertEquals("first", firstResult.getValue());
+		assertEquals("first", firstResult.getValue());
 	}
 	
 	/**
@@ -56,7 +62,7 @@ public class ResultUtilTest {
 	@Verifies(value = "should return the same result if the value of the result is a not a list", method = "getFirst(CalculationResult)")
 	public void getFirst_shouldReturnTheSameResultIfTheValueOfTheResultIsANotAList() throws Exception {
 		CalculationResult result = new SimpleResult("result", null);
-		Assert.assertEquals(result, ResultUtil.getFirst(result));
+		assertEquals(result, ResultUtil.getFirst(result));
 	}
 	
 	/**
@@ -65,7 +71,7 @@ public class ResultUtilTest {
 	@Test
 	@Verifies(value = "should return null if the passed in result is null", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnNullIfThePassedInResultIsNull() throws Exception {
-		Assert.assertNull(ResultUtil.convert(null, String.class));
+		assertNull(ResultUtil.convert(null, String.class));
 	}
 	
 	/**
@@ -76,8 +82,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty collection if the result has a null value and class is a list", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyCollectionIfTheResultHasANullValueAndClassIsAList() throws Exception {
 		List list = ResultUtil.convert(new SimpleResult(null, null), List.class);
-		Assert.assertNotNull(list);
-		Assert.assertTrue(list.isEmpty());
+		assertNotNull(list);
+		assertTrue(list.isEmpty());
 	}
 	
 	/**
@@ -88,8 +94,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty collection if the result is null and class is a list", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyCollectionIfTheResultIsNullAndClassIsAList() throws Exception {
 		List list = ResultUtil.convert(null, List.class);
-		Assert.assertNotNull(list);
-		Assert.assertTrue(list.isEmpty());
+		assertNotNull(list);
+		assertTrue(list.isEmpty());
 	}
 	
 	/**
@@ -100,8 +106,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty map if the result has a null value and class is a map", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyMapIfTheResultHasANullValueAndClassIsAMap() throws Exception {
 		Map map = ResultUtil.convert(new SimpleResult(null, null), Map.class);
-		Assert.assertNotNull(map);
-		Assert.assertTrue(map.isEmpty());
+		assertNotNull(map);
+		assertTrue(map.isEmpty());
 	}
 	
 	/**
@@ -112,8 +118,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty map if the result is null and class is a map", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyMapIfTheResultIsNullAndClassIsAMap() throws Exception {
 		Map map = ResultUtil.convert(null, Map.class);
-		Assert.assertNotNull(map);
-		Assert.assertTrue(map.isEmpty());
+		assertNotNull(map);
+		assertTrue(map.isEmpty());
 	}
 	
 	/**
@@ -124,8 +130,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty collection if the result has a null value and class is a set", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyCollectionIfTheResultHasANullValueAndClassIsASet() throws Exception {
 		Set set = ResultUtil.convert(new SimpleResult(null, null), Set.class);
-		Assert.assertNotNull(set);
-		Assert.assertTrue(set.isEmpty());
+		assertNotNull(set);
+		assertTrue(set.isEmpty());
 	}
 	
 	/**
@@ -136,8 +142,8 @@ public class ResultUtilTest {
 	@Verifies(value = "should return an empty collection if the result is null and class is a set", method = "convert(CalculationResult,Class<T>)")
 	public void convert_shouldReturnAnEmptyCollectionIfTheResultIsNullAndClassIsASet() throws Exception {
 		Set set = ResultUtil.convert(null, Set.class);
-		Assert.assertNotNull(set);
-		Assert.assertTrue(set.isEmpty());
+		assertNotNull(set);
+		assertTrue(set.isEmpty());
 	}
 
 	/**
@@ -146,7 +152,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForNull() throws Exception {
-	    Assert.assertTrue(ResultUtil.isFalse(null));
+	    assertTrue(ResultUtil.isFalse(null));
     }
 
 	/**
@@ -155,7 +161,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForAnEmptyCollection() throws Exception {
-    	Assert.assertTrue(ResultUtil.isFalse(new ArrayList<String>()));
+    	assertTrue(ResultUtil.isFalse(new ArrayList<String>()));
     }
 
 	/**
@@ -164,7 +170,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnFalseForANonemptyCollection() throws Exception {
-    	Assert.assertFalse(ResultUtil.isFalse(Collections.singleton("Not Empty")));
+    	assertFalse(ResultUtil.isFalse(Collections.singleton("Not Empty")));
     }
 
 	/**
@@ -173,7 +179,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForAnEmptyMap() throws Exception {
-    	Assert.assertTrue(ResultUtil.isFalse(new HashMap<String, Object>()));
+    	assertTrue(ResultUtil.isFalse(new HashMap<String, Object>()));
     }
 
 	/**
@@ -184,7 +190,7 @@ public class ResultUtilTest {
     public void isFalse_shouldReturnFalseForANonemptyMap() throws Exception {
     	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("not", "empty");
-    	Assert.assertFalse(ResultUtil.isFalse(map));
+    	assertFalse(ResultUtil.isFalse(map));
     }
 
 	/**
@@ -193,7 +199,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForAnEmptyString() throws Exception {
-    	Assert.assertTrue(ResultUtil.isFalse(""));
+    	assertTrue(ResultUtil.isFalse(""));
     }
 
 	/**
@@ -202,7 +208,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnFalseForANonemptyString() throws Exception {
-    	Assert.assertFalse(ResultUtil.isFalse("Not empty"));
+    	assertFalse(ResultUtil.isFalse("Not empty"));
     }
 
 	/**
@@ -211,9 +217,9 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForTheNumber0() throws Exception {
-    	Assert.assertTrue(ResultUtil.isFalse(0));
-    	Assert.assertTrue(ResultUtil.isFalse(0d));
-    	Assert.assertTrue(ResultUtil.isFalse(BigDecimal.ZERO));
+    	assertTrue(ResultUtil.isFalse(0));
+    	assertTrue(ResultUtil.isFalse(0d));
+    	assertTrue(ResultUtil.isFalse(BigDecimal.ZERO));
     }
 
 	/**
@@ -222,9 +228,9 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnFalseForANonzeroNumber() throws Exception {
-    	Assert.assertFalse(ResultUtil.isFalse(-1));
-    	Assert.assertFalse(ResultUtil.isFalse(10d));
-    	Assert.assertFalse(ResultUtil.isFalse(BigDecimal.ONE));
+    	assertFalse(ResultUtil.isFalse(-1));
+    	assertFalse(ResultUtil.isFalse(10d));
+    	assertFalse(ResultUtil.isFalse(BigDecimal.ONE));
     }
 
 	/**
@@ -236,7 +242,7 @@ public class ResultUtilTest {
     	Obs obs = new Obs();
     	obs.setConcept(mockConcept(ConceptDatatype.NUMERIC_UUID));
     	obs.setValueNumeric(0d);
-    	Assert.assertTrue(ResultUtil.isFalse(obs));
+    	assertTrue(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -248,7 +254,7 @@ public class ResultUtilTest {
     	Obs obs = new Obs();
     	obs.setConcept(mockConcept(ConceptDatatype.NUMERIC_UUID));
     	obs.setValueNumeric(-1d);
-    	Assert.assertFalse(ResultUtil.isFalse(obs));
+    	assertFalse(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -260,7 +266,7 @@ public class ResultUtilTest {
     	Obs obs = new Obs();
     	obs.setConcept(mockConcept(ConceptDatatype.TEXT_UUID));
     	obs.setValueText("");
-    	Assert.assertTrue(ResultUtil.isFalse(obs));
+    	assertTrue(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -272,7 +278,7 @@ public class ResultUtilTest {
     	Obs obs = new Obs();
     	obs.setConcept(mockConcept(ConceptDatatype.TEXT_UUID));
     	obs.setValueText("not empty");
-    	Assert.assertFalse(ResultUtil.isFalse(obs));
+    	assertFalse(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -285,7 +291,7 @@ public class ResultUtilTest {
     	Obs obs = Mockito.mock(Obs.class);
     	Mockito.when(obs.getValueAsBoolean()).thenReturn(Boolean.FALSE);
     	Mockito.when(obs.getConcept()).thenReturn(mockConcept(ConceptDatatype.CODED_UUID));
-    	Assert.assertTrue(ResultUtil.isFalse(obs));
+    	assertTrue(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -299,7 +305,7 @@ public class ResultUtilTest {
     	// in 1.7 the test should do this instead on mocking getValueCoded
     	Mockito.when(obs.getValueAsBoolean()).thenReturn(null);
     	Mockito.when(obs.getConcept()).thenReturn(mockConcept(ConceptDatatype.CODED_UUID));
-    	Assert.assertFalse(ResultUtil.isFalse(obs));
+    	assertFalse(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -311,7 +317,7 @@ public class ResultUtilTest {
     	Obs obs = Mockito.mock(Obs.class);
     	Mockito.when(obs.getValueAsBoolean()).thenReturn(Boolean.FALSE);
     	Mockito.when(obs.getConcept()).thenReturn(mockConcept(ConceptDatatype.BOOLEAN_UUID));
-    	Assert.assertTrue(ResultUtil.isFalse(obs));
+    	assertTrue(ResultUtil.isFalse(obs));
     }
 
 	/**
@@ -323,7 +329,7 @@ public class ResultUtilTest {
     	Obs obs = Mockito.mock(Obs.class);
     	Mockito.when(obs.getValueAsBoolean()).thenReturn(Boolean.TRUE);
     	Mockito.when(obs.getConcept()).thenReturn(mockConcept(ConceptDatatype.BOOLEAN_UUID));
-    	Assert.assertFalse(ResultUtil.isFalse(obs));
+    	assertFalse(ResultUtil.isFalse(obs));
     }
     
 	/**
@@ -346,7 +352,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnTrueForAnEmptyListResult() throws Exception {
-    	Assert.assertTrue(ResultUtil.isFalse(new ListResult()));
+    	assertTrue(ResultUtil.isFalse(new ListResult()));
     }
 
 	/**
@@ -357,7 +363,7 @@ public class ResultUtilTest {
     public void isFalse_shouldReturnFalseForNonemptyListResult() throws Exception {
     	ListResult r = new ListResult();
     	r.add(new SimpleResult("not empty", null));
-    	Assert.assertFalse(ResultUtil.isFalse(r));
+    	assertFalse(ResultUtil.isFalse(r));
     }
 
 	/**
@@ -367,7 +373,7 @@ public class ResultUtilTest {
     @Test
     public void isFalse_shouldReturnTrueForAnEmptySimpleResult() throws Exception {
     	// it's bad practice to have a SimpleResult whose value is null, but we should still handle the case 
-    	Assert.assertTrue(ResultUtil.isFalse(new SimpleResult(null, null)));
+    	assertTrue(ResultUtil.isFalse(new SimpleResult(null, null)));
     }
 
 	/**
@@ -376,7 +382,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isFalse_shouldReturnFalseForANonemptySimpleResult() throws Exception {
-    	Assert.assertFalse(ResultUtil.isFalse(new SimpleResult(new PatientProgram(), null)));
+    	assertFalse(ResultUtil.isFalse(new SimpleResult(new PatientProgram(), null)));
     }
 
 	/**
@@ -385,7 +391,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isEmpty_shouldReturnTrueForNull() throws Exception {
-	    Assert.assertTrue(ResultUtil.isEmpty(null));
+	    assertTrue(ResultUtil.isEmpty(null));
     }
 
 	/**
@@ -394,7 +400,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isEmpty_shouldReturnTrueForEmptyCollections() throws Exception {
-    	Assert.assertTrue(ResultUtil.isEmpty(Collections.EMPTY_LIST));
+    	assertTrue(ResultUtil.isEmpty(Collections.EMPTY_LIST));
     }
 
 	/**
@@ -403,7 +409,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isEmpty_shouldReturnTrueForEmptyMaps() throws Exception {
-    	Assert.assertTrue(ResultUtil.isEmpty(Collections.EMPTY_MAP));
+    	assertTrue(ResultUtil.isEmpty(Collections.EMPTY_MAP));
     }
 
 	/**
@@ -412,7 +418,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isEmpty_shouldReturnFalseForNonemptyCollections() throws Exception {
-    	Assert.assertFalse(ResultUtil.isEmpty(Collections.singleton("not empty")));
+    	assertFalse(ResultUtil.isEmpty(Collections.singleton("not empty")));
     }
 
 	/**
@@ -423,7 +429,7 @@ public class ResultUtilTest {
     public void isEmpty_shouldReturnFalseForNonemptyMaps() throws Exception {
     	Map<String, Object> map = new HashMap<String, Object>();
     	map.put("not", "empty");
-    	Assert.assertFalse(ResultUtil.isEmpty(map));
+    	assertFalse(ResultUtil.isEmpty(map));
     }
 
 	/**
@@ -432,7 +438,7 @@ public class ResultUtilTest {
      */
     @Test
     public void isEmpty_shouldReturnFalseForPlainObjects() throws Exception {
-    	Assert.assertFalse(ResultUtil.isEmpty(-1));
+    	assertFalse(ResultUtil.isEmpty(-1));
     }
 
 	/**
@@ -441,7 +447,7 @@ public class ResultUtilTest {
      */
     @Test
     public void convert_shouldReturnTrueWhenConvertingAnArbitraryObjectToBoolean() throws Exception {
-	    Assert.assertTrue(ResultUtil.convert(new SimpleResult(new PatientProgram(), null), Boolean.class));
+	    assertTrue(ResultUtil.convert(new SimpleResult(new PatientProgram(), null), Boolean.class));
     }
 
 	/**
@@ -452,7 +458,7 @@ public class ResultUtilTest {
     public void convert_shouldReturnFalseWhenConvertingFalseyValuesToBoolean() throws Exception {
     	Object[] falsey = new Object[] { "", 0, 0d, Boolean.FALSE, null };
     	for (Object f : falsey) {
-    		Assert.assertFalse(ResultUtil.convert(new SimpleResult(f, null), Boolean.class));
+    		assertFalse(ResultUtil.convert(new SimpleResult(f, null), Boolean.class));
     	}
     }
     
