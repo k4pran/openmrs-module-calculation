@@ -177,8 +177,8 @@ public class CalculationRegistrationServiceTest extends BaseModuleContextSensiti
 		//this should synchronize our cache with the DB
 		service.saveCalculationRegistration(newTokenRegInstance);
 
-		//should fail this time because of the new unknown class
-
-		service.getCalculation(tokenName, AgeCalculation.class);
+		//the cache is now in sync with the DB, so the token resolves to the newly saved calculation
+		MostRecentObsCalculation updated = service.getCalculation(tokenName, MostRecentObsCalculation.class);
+		Assertions.assertEquals(5089, updated.getWhichConcept().getConceptId().intValue());
 	}
 }
