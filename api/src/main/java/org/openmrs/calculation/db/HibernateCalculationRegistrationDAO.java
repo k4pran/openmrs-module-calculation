@@ -33,145 +33,145 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class HibernateCalculationRegistrationDAO implements CalculationRegistrationDAO {
 
-    protected final Log log = LogFactory.getLog(this.getClass());
+	protected final Log log = LogFactory.getLog(this.getClass());
 
-    private static final String TOKEN = "token";
+	private static final String TOKEN = "token";
 
-    private static final String PROVIDER_CLASS_NAME = "providerClassName";
+	private static final String PROVIDER_CLASS_NAME = "providerClassName";
 
-    private final SessionFactory sessionFactory;
+	private final SessionFactory sessionFactory;
 
-    public HibernateCalculationRegistrationDAO(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+	public HibernateCalculationRegistrationDAO(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
-    /**
-     * @return the current Hibernate session
-     */
-    private Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+	/**
+	 * @return the current Hibernate session
+	 */
+	private Session getCurrentSession() {
+		return sessionFactory.getCurrentSession();
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#getCalculationRegistration(Integer)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public CalculationRegistration getCalculationRegistration(Integer calculationRegistrationId) {
-        return getCurrentSession().find(CalculationRegistration.class, calculationRegistrationId);
-    }
+	/**
+	 * @see CalculationRegistrationDAO#getCalculationRegistration(Integer)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public CalculationRegistration getCalculationRegistration(Integer calculationRegistrationId) {
+		return getCurrentSession().find(CalculationRegistration.class, calculationRegistrationId);
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#getCalculationRegistrationByUuid(String)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public CalculationRegistration getCalculationRegistrationByUuid(String uuid) {
-        return HibernateUtil.getUniqueEntityByUUID(sessionFactory, CalculationRegistration.class, uuid);
-    }
+	/**
+	 * @see CalculationRegistrationDAO#getCalculationRegistrationByUuid(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public CalculationRegistration getCalculationRegistrationByUuid(String uuid) {
+		return HibernateUtil.getUniqueEntityByUUID(sessionFactory, CalculationRegistration.class, uuid);
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#getCalculationRegistrationByToken(String)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public CalculationRegistration getCalculationRegistrationByToken(String token) {
-        Session session = getCurrentSession();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
-        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+	/**
+	 * @see CalculationRegistrationDAO#getCalculationRegistrationByToken(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public CalculationRegistration getCalculationRegistrationByToken(String token) {
+		Session session = getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+		Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
 
-        query.select(root)
-                .where(builder.equal(
-                        builder.lower(root.get(TOKEN)),
-                        token.toLowerCase(Locale.ROOT)
-                ));
+		query.select(root)
+				.where(builder.equal(
+						builder.lower(root.get(TOKEN)),
+						token.toLowerCase(Locale.ROOT)
+				));
 
-        return session.createQuery(query).uniqueResult();
-    }
+		return session.createQuery(query).uniqueResult();
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#getAllCalculationRegistrations()
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<CalculationRegistration> getAllCalculationRegistrations() {
-        Session session = getCurrentSession();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
-        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+	/**
+	 * @see CalculationRegistrationDAO#getAllCalculationRegistrations()
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<CalculationRegistration> getAllCalculationRegistrations() {
+		Session session = getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+		Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
 
-        query.select(root);
+		query.select(root);
 
-        return session.createQuery(query).getResultList();
-    }
+		return session.createQuery(query).getResultList();
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#getCalculationRegistrationsByProviderClassname(String)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<CalculationRegistration> getCalculationRegistrationsByProviderClassname(String providerClassname) {
-        Session session = getCurrentSession();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
-        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+	/**
+	 * @see CalculationRegistrationDAO#getCalculationRegistrationsByProviderClassname(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<CalculationRegistration> getCalculationRegistrationsByProviderClassname(String providerClassname) {
+		Session session = getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+		Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
 
-        query.select(root)
-                .where(builder.equal(root.get(PROVIDER_CLASS_NAME), providerClassname));
+		query.select(root)
+				.where(builder.equal(root.get(PROVIDER_CLASS_NAME), providerClassname));
 
-        return session.createQuery(query).getResultList();
-    }
+		return session.createQuery(query).getResultList();
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#findCalculationRegistrations(String)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<CalculationRegistration> findCalculationRegistrations(String partialToken) {
-        Session session = getCurrentSession();
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
-        Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
+	/**
+	 * @see CalculationRegistrationDAO#findCalculationRegistrations(String)
+	 */
+	@Override
+	@Transactional(readOnly = true)
+	public List<CalculationRegistration> findCalculationRegistrations(String partialToken) {
+		Session session = getCurrentSession();
+		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaQuery<CalculationRegistration> query = builder.createQuery(CalculationRegistration.class);
+		Root<CalculationRegistration> root = query.from(CalculationRegistration.class);
 
-        query.select(root)
-                .where(builder.like(
-                        builder.lower(root.get(TOKEN)),
-                        containsIgnoreCasePattern(partialToken)
-                ));
+		query.select(root)
+				.where(builder.like(
+						builder.lower(root.get(TOKEN)),
+						containsIgnoreCasePattern(partialToken)
+				));
 
-        return session.createQuery(query).getResultList();
-    }
+		return session.createQuery(query).getResultList();
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#saveCalculationRegistration(CalculationRegistration)
-     */
-    @Override
-    @Transactional
-    public CalculationRegistration saveCalculationRegistration(
-            CalculationRegistration calculationRegistration) {
-        return HibernateUtil.saveOrUpdate(
-                getCurrentSession(),
-                calculationRegistration
-        );
-    }
+	/**
+	 * @see CalculationRegistrationDAO#saveCalculationRegistration(CalculationRegistration)
+	 */
+	@Override
+	@Transactional
+	public CalculationRegistration saveCalculationRegistration(
+			CalculationRegistration calculationRegistration) {
+		return HibernateUtil.saveOrUpdate(
+				getCurrentSession(),
+				calculationRegistration
+		);
+	}
 
-    /**
-     * @see CalculationRegistrationDAO#deleteCalculationRegistration(CalculationRegistration)
-     */
-    @Override
-    @Transactional
-    public void deleteCalculationRegistration(CalculationRegistration calculationRegistration) {
-        Session session = getCurrentSession();
+	/**
+	 * @see CalculationRegistrationDAO#deleteCalculationRegistration(CalculationRegistration)
+	 */
+	@Override
+	@Transactional
+	public void deleteCalculationRegistration(CalculationRegistration calculationRegistration) {
+		Session session = getCurrentSession();
 
-        CalculationRegistration managedCalculationRegistration = session.contains(calculationRegistration)
-                ? calculationRegistration
-                : session.merge(calculationRegistration);
+		CalculationRegistration managedCalculationRegistration = session.contains(calculationRegistration)
+				? calculationRegistration
+				: session.merge(calculationRegistration);
 
-        session.remove(managedCalculationRegistration);
-    }
+		session.remove(managedCalculationRegistration);
+	}
 
-    private String containsIgnoreCasePattern(String value) {
-        return "%" + value.toLowerCase(Locale.ROOT) + "%";
-    }
+	private String containsIgnoreCasePattern(String value) {
+		return "%" + value.toLowerCase(Locale.ROOT) + "%";
+	}
 }
